@@ -15,9 +15,19 @@ repositories {
     mavenCentral()
 }
 
+def projectDependencies = [
+        'org.springframework.boot:spring-boot-starter-web',
+        'org.springframework.boot:spring-boot-starter-security'
+]
+
+def testDependencies = [
+        'org.springframework.boot:spring-boot-starter-test',
+        'org.springframework.security:spring-security-test'
+]
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation projectDependencies
+    testImplementation testDependencies
 }
 
 tasks.named('test') {
