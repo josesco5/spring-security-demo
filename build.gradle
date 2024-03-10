@@ -17,7 +17,9 @@ repositories {
 
 def projectDependencies = [
         'org.springframework.boot:spring-boot-starter-web',
-        'org.springframework.boot:spring-boot-starter-security'
+        'org.springframework.boot:spring-boot-starter-security',
+        'org.springframework.boot:spring-boot-starter-data-jpa',
+        'org.springframework.boot:spring-boot-starter-jdbc',
 ]
 
 def testDependencies = [
@@ -28,6 +30,8 @@ def testDependencies = [
 dependencies {
     implementation projectDependencies
     testImplementation testDependencies
+
+    runtimeOnly 'com.mysql:mysql-connector-j'
 }
 
 tasks.named('test') {
