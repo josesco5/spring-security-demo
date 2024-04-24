@@ -29,7 +29,9 @@ CREATE TABLE customer (
     email VARCHAR(45) NOT NULL,
     pwd VARCHAR(200) NOT NULL,
     role VARCHAR(45) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (email),
+    INDEX (email)
 );
 
 INSERT INTO customer(email, pwd, role) VALUES ('johndoe@example.com', '54321', 'admin');
