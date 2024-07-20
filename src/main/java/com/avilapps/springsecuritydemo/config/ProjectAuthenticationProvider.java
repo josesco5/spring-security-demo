@@ -1,28 +1,24 @@
 package com.avilapps.springsecuritydemo.config;
 
-import com.avilapps.springsecuritydemo.data.entities.Customer;
 import com.avilapps.springsecuritydemo.data.repository.CustomerRepository;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
-
 @Component
 public class ProjectAuthenticationProvider implements AuthenticationProvider {
+    private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-    private final CustomerRepository customerRepository;
 
-    public ProjectAuthenticationProvider(PasswordEncoder passwordEncoder, CustomerRepository customerRepository) {
+    public ProjectAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder, CustomerRepository customerRepository) {
+        this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
-        this.customerRepository = customerRepository;
     }
 
 
@@ -31,16 +27,13 @@ public class ProjectAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        Optional<Customer> optCustomer = customerRepository.findByEmail(username).stream().findFirst();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        if (optCustomer.isEmpty() || !passwordEncoder.matches(password, optCustomer.get().getPwd())) {
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException("Invalid credentials");
         }
 
-        Customer customer = optCustomer.get();
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(customer.getRole()));
-
-        return new UsernamePasswordAuthenticationToken(username, password, authorities);
+        return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
     }
 
     @Override

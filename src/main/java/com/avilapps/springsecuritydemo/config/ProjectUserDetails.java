@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectUserDetails implements UserDetailsService {
@@ -22,12 +23,13 @@ public class ProjectUserDetails implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        List<Customer> customers = customerRepository.findByEmail(username);
-        if (customers.isEmpty()) {
+        Optional<Customer> optCustomer = customerRepository.findByEmail(username).stream().findFirst();
+
+        if (optCustomer.isEmpty()) {
             throw new UsernameNotFoundException("User details not found the user: " + username);
         }
 
-        Customer customer = customers.get(0);
+        Customer customer = optCustomer.get();
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(customer.getRole()));
 
         return new User(customer.getEmail(), customer.getPwd(), authorities);
