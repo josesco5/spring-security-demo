@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: prod
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/springsecuritydemo}
     username: ${DB_USER:root}
